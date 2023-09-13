@@ -1,0 +1,50 @@
+name: Build in main
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+env:
+  CI: true
+
+jobs:
+  build:
+    permissions:
+      contents: write # for softprops/action-gh-release to create GitHub release
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+        env:
+          CI: true
+
+      - name: Lint
+        run: yarn lint
+        env:
+          CI: true
+
+      - name: Test
+        run: |
+          yarn test || yarn test || yarn test || exit 1
+        env:
+          CI: true
+
+      - name: Build
+        run: yarn build
+        env:
+          CI: true
