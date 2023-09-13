@@ -708,6 +708,7 @@ export let ComboboxInput = defineComponent({
   },
   emits: {
     change: (_value: Event & { target: HTMLInputElement }) => true,
+    clearInput: null,
   },
   setup(props, { emit, attrs, slots, expose }) {
     let api = useComboboxContext('ComboboxInput')
@@ -775,6 +776,9 @@ export let ComboboxInput = defineComponent({
 
           if (oldState === ComboboxStates.Open && state === ComboboxStates.Closed) {
             input.value = currentDisplayValue
+            if (!currentDisplayValue) {
+              emit('clearInput')
+            }
           } else if (currentDisplayValue !== oldCurrentDisplayValue) {
             input.value = currentDisplayValue
           }
